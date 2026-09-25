@@ -5,10 +5,10 @@
 
 name: timescribe
 
+# Shared runtime config. The image is built ONLY by the web service;
+# queue and scheduler reuse it (building it three times in parallel
+# makes the exports collide on the same tag).
 x-app: &app
-  build:
-    context: ..
-    dockerfile: Dockerfile
   image: timescribe:local
   restart: unless-stopped
   env_file: .env
@@ -18,6 +18,9 @@ x-app: &app
 services:
   web:
     <<: *app
+    build:
+      context: ..
+      dockerfile: Dockerfile
     environment:
       RUN_MIGRATIONS: "true"
     ports:
@@ -31,6 +34,7 @@ services:
 
   queue:
     <<: *app
+    pull_policy: never
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3"]
     depends_on:
       web:
@@ -38,6 +42,7 @@ services:
 
   scheduler:
     <<: *app
+    pull_policy: never
     command: ["php", "artisan", "schedule:work"]
     depends_on:
       web:
