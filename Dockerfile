@@ -29,10 +29,22 @@ COPY . .
 COPY --from=vendor /app/vendor ./vendor
 RUN npm run build
 
+# ---------- Test suite (docker build --target test ...) ----------
+FROM php-base AS test
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY composer.json composer.lock ./
+RUN composer install --no-scripts --no-autoloader --no-interaction --prefer-dist
+COPY . .
+COPY --from=assets /app/public/build ./public/build
+RUN composer dump-autoload --no-interaction
+# Throwaway key generated per run: tests need one for sessions/cookies.
+CMD ["sh", "-c", "APP_KEY=base64:$(head -c 32 /dev/urandom | base64) php artisan test"]
+
 # ---------- Runtime ----------
 FROM php-base AS runtime
 ENV APP_ENV=production \
     APP_DEBUG=false \
+    APP_RUNTIME=web \
     LOG_CHANNEL=stderr \
     DB_CONNECTION=sqlite \
     DB_DATABASE=/data/database.sqlite
@@ -42,6 +54,7 @@ COPY --from=assets /app/public/build /app/public/build
 COPY docker/entrypoint.sh /usr/local/bin/timescribe-entrypoint
 
 RUN chmod +x /usr/local/bin/timescribe-entrypoint \
+    && rm -rf /app/tests \
     && mkdir -p /data \
     && chown -R www-data:www-data /data /app/storage /app/bootstrap/cache
 
