@@ -71,6 +71,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Runtime
+    |--------------------------------------------------------------------------
+    |
+    | "desktop" (default) runs TimeScribe inside NativePHP/Electron.
+    | "web" runs it as a regular web app (e.g. Docker), where desktop-only
+    | features are disabled or replaced.
+    |
+    */
+
+    'runtime' => env('APP_RUNTIME', 'desktop'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |

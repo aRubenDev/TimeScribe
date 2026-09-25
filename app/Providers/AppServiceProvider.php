@@ -1,9 +1,12 @@
 <?php
 
+// app/Providers/AppServiceProvider.php
+
 declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Native\NullClient;
 use App\Services\LocaleService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -13,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Native\Desktop\Client\Client;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,7 +26,9 @@ class AppServiceProvider extends ServiceProvider
     #[\Override]
     public function register(): void
     {
-        //
+        if (config('app.runtime') === 'web') {
+            $this->app->bind(Client::class, NullClient::class);
+        }
     }
 
     /**
