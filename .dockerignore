@@ -1,0 +1,26 @@
+# .dockerignore
+.git
+.github
+.agents
+.junie
+.idea
+.vscode
+node_modules
+vendor
+nativephp
+public/build
+public/hot
+public/storage
+lang/php_*.json
+storage/logs/*
+storage/pail
+storage/testing
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+!storage/**/.gitignore
+database/*.sqlite*
+.env
+.env.*
+docker/.env
+tests
