@@ -44,7 +44,9 @@ COPY tests/patches ./tests/patches
 RUN composer install --no-scripts --no-autoloader --no-interaction --prefer-dist
 COPY . .
 COPY --from=assets /app/public/build ./public/build
-RUN composer dump-autoload --no-interaction
+# Tests expect a .env like any dev checkout (APP_KEY is still injected at run time).
+RUN cp .env.example .env \
+    && composer dump-autoload --no-interaction
 # Throwaway key generated per run: tests need one for sessions/cookies.
 CMD ["sh", "-c", "APP_KEY=base64:$(head -c 32 /dev/urandom | base64) php artisan test"]
 

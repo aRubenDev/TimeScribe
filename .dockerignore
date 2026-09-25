@@ -21,4 +21,5 @@ storage/framework/views/*
 database/*.sqlite*
 .env
 .env.*
+!.env.example
 docker/.env
