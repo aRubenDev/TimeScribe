@@ -1,6 +1,5 @@
 # .dockerignore
 .git
-.github
 .agents
 .junie
 .idea

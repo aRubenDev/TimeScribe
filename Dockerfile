@@ -31,10 +31,16 @@ RUN npm run build
 
 # ---------- Test suite (docker build --target test ...) ----------
 FROM php-base AS test
+# git: cweagans/composer-patches (dev) applies patches with `git apply`.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
 # pest-plugin-browser (dev dependency) requires ext-sockets; the web image doesn't need it.
 RUN install-php-extensions sockets
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-COPY composer.json composer.lock ./
+COPY composer.json composer.lock patches.lock.json ./
+# composer-patches applies these during install, so they must exist first.
+COPY tests/patches ./tests/patches
 RUN composer install --no-scripts --no-autoloader --no-interaction --prefer-dist
 COPY . .
 COPY --from=assets /app/public/build ./public/build
