@@ -23,4 +23,3 @@ database/*.sqlite*
 .env
 .env.*
 docker/.env
-tests
